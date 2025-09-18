@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>Form Biodata Modern Foto</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <style>
+    body { font-family: Arial, sans-serif; background:#eef2f7; padding:20px; }
+    h2 { text-align: center; color:#333; }
+    form { max-width: 650px; margin: auto; background:#fff; padding:25px; border-radius:14px; box-shadow:0 4px 20px rgba(0,0,0,0.1); }
+    label { font-weight:bold; display:block; margin-top:12px; color:#333; }
+    input, textarea { width:100%; padding:10px; margin-top:5px; border:1px solid #ccc; border-radius:8px; }
+    button { margin-top:20px; padding:14px; background:#0066ff; color:#fff; font-weight:bold; border:none; border-radius:8px; cursor:pointer; width:100%; font-size:16px; }
+    button:hover { background:#004ecc; }
+  </style>
+</head>
+<body>
+  <h2>Form Biodata Modern</h2>
+  <form id="biodataForm">
+    <label>Nama Lengkap</label>
+    <input type="text" id="nama">
+
+    <label>Tanggal Lahir</label>
+    <input type="date" id="tglLahir">
+
+    <label>Alamat</label>
+    <textarea id="alamat"></textarea>
+
+    <label>Pengalaman Kerja</label>
+    <textarea id="pengalaman"></textarea>
+
+    <label>Pendidikan Terakhir</label>
+    <input type="text" id="pendidikan">
+
+    <label>Awal Bergabung di Adgar</label>
+    <input type="date" id="gabung">
+
+    <label>Upload Foto Diri</label>
+    <input type="file" id="foto" accept="image/*">
+
+    <button type="button" onclick="generatePDF()">Generate PDF Modern</button>
+  </form>
+
+  <script>
+    async function generatePDF() {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+
+      let nama = document.getElementById("nama").value;
+      let tglLahir = document.getElementById("tglLahir").value;
+      let alamat = document.getElementById("alamat").value;
+      let pengalaman = document.getElementById("pengalaman").value;
+      let pendidikan = document.getElementById("pendidikan").value;
+      let gabung = document.getElementById("gabung").value;
+      let fotoInput = document.getElementById("foto");
+
+      // === HEADER STRIP ===
+      doc.setFillColor(0, 102, 255);
+      doc.rect(0, 0, 210, 20, "F");
+
+      // === JUDUL BIODATA ===
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(20);
+      doc.setTextColor(0, 0, 0);
+      doc.text("BIODATA KARYAWAN", 105, 30, { align: "center" });
+
+      // === FOTO PROFIL ===
+      if (fotoInput.files.length > 0) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          const imgData = e.target.result;
+
+          doc.addImage(imgData, "JPEG", 20, 40, 40, 40);
+
+          // === NAMA & DATA PRIBADI ===
+          doc.setFontSize(18);
+          doc.setFont("helvetica", "bold");
+          doc.text(nama || "Nama Lengkap", 70, 50);
+
+          doc.setFontSize(12);
+          doc.setFont("helvetica", "normal");
+          doc.text(`Tanggal Lahir : ${tglLahir}`, 70, 60);
+          doc.text(`Alamat :`, 70, 70);
+          doc.text(doc.splitTextToSize(alamat, 110), 70, 78);
+
+          let y = 100;
+
+          // === PENGALAMAN ===
+          doc.setFillColor(240,240,240);
+          doc.roundedRect(15, y, 180, 40, 3, 3, "F");
+          doc.setFont("helvetica", "bold");
+          doc.setFontSize(14);
+          doc.text("Pengalaman Kerja", 20, y+10);
+          doc.setFont("helvetica", "normal");
+          doc.setFontSize(12);
+          doc.text(doc.splitTextToSize(pengalaman, 170), 20, y+20);
+
+          y += 55;
+          // === PENDIDIKAN ===
+          doc.setFillColor(240,240,240);
+          doc.roundedRect(15, y, 180, 25, 3, 3, "F");
+          doc.setFont("helvetica", "bold");
+          doc.setFontSize(14);
+          doc.text("Pendidikan Terakhir", 20, y+10);
+          doc.setFont("helvetica", "normal");
+          doc.setFontSize(12);
+          doc.text(pendidikan, 20, y+20);
+
+          y += 40;
+          // === AWAL BERGABUNG ===
+          doc.setFillColor(240,240,240);
+          doc.roundedRect(15, y, 180, 25, 3, 3, "F");
+          doc.setFont("helvetica", "bold");
+          doc.setFontSize(14);
+          doc.text("Awal Bergabung di Adgar", 20, y+10);
+          doc.setFont("helvetica", "normal");
+          doc.setFontSize(12);
+          doc.text(gabung, 20, y+20);
+
+          doc.save("Biodata_Modern_Foto.pdf");
+        };
+        reader.readAsDataURL(fotoInput.files[0]);
+      } else {
+        doc.text("Foto tidak tersedia", 20, 40);
+        doc.save("Biodata_Modern_Foto.pdf");
+      }
+    }
+  </script>
+</body>
+</html>
